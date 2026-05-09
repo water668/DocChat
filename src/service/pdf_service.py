@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import List, Optional
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
-
-from ..core.document import DocumentProcessor
+from ..core.llm import get_llm
+from ..core.document import DocumentProcessor, summarize_documents
 from ..core.vector_store import VectorStore
 from .database import PDFMetadata
 import hashlib
@@ -56,6 +56,15 @@ class PDFService:
         documents = self.doc_processor.load_pdf(file_path)
         chunks = self.doc_processor.split_documents(documents)
 
+        # summarize this doc
+        summary = summarize_documents(chunks, llm=get_llm('deepseek-chat'))
+        if summary == '':
+            print('Summary is empty, skipping adding summary to vector store.')
+            return None
+        
+        print('\n[Summary]:', summary)
+        self.vector_store.add_summary(summary, pdf_id)
+
         # Add metadata to chunks
         for i, chunk in enumerate(chunks):
             chunk.metadata.update({
@@ -66,7 +75,6 @@ class PDFService:
             })
 
         # Create vector DB collection
-        # collection_name = f"pdf_{abs(hash(file.filename + pdf_id))}"
         vector_db = self.vector_store.create_vector_db(
             documents=chunks,
             collection_name=pdf_id

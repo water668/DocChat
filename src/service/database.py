@@ -37,25 +37,25 @@ class PDFMetadata(Base):
     file_path = Column(String)
 
 
-# class ChatSession(Base):
-#     """Chat session table."""
-#     __tablename__ = "chat_sessions"
+class ChatSession(Base):
+    """Chat session table."""
+    __tablename__ = "chat_sessions"
 
-#     session_id = Column(String, primary_key=True)
-#     created_at = Column(DateTime, nullable=False)
-#     last_active = Column(DateTime, nullable=False)
+    session_id = Column(String, primary_key=True)
+    created_at = Column(DateTime, nullable=False)
+    last_active = Column(DateTime, nullable=False)
 
 
-# class ChatMessage(Base):
-#     """Chat message table."""
-#     __tablename__ = "messages"
+class ChatMessage(Base):
+    """Chat message table."""
+    __tablename__ = "messages"
 
-#     message_id = Column(Integer, primary_key=True, autoincrement=True)
-#     session_id = Column(String, nullable=False)
-#     role = Column(String, nullable=False)
-#     content = Column(String, nullable=False)
-#     sources = Column(JSON)
-#     timestamp = Column(DateTime, nullable=False)
+    message_id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(String, nullable=False)
+    role = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    sources = Column(JSON)
+    timestamp = Column(DateTime, nullable=False)
 
 
 # Create all tables

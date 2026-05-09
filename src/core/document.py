@@ -44,7 +44,8 @@ def summarize_documents(documents: List, llm, n_front: int = 4) -> str:
         logger.info("Summarizing documents")
         from langchain_classic.chains.summarize import load_summarize_chain
         summarize_chain = load_summarize_chain(llm, chain_type="stuff", verbose=False)
-        return summarize_chain.invoke(documents[:n_front])['output_text']
+        response = summarize_chain.invoke(documents[:n_front])
+        return response['output_text']
     except Exception as e:
         logger.error(f"Error summarizing documents: {e}")
         raise

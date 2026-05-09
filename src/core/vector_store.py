@@ -1,8 +1,9 @@
 import logging
 from typing import List
 from pathlib import Path
+from langchain_core.documents import Document
 from langchain_ollama import OllamaEmbeddings 
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 logger = logging.getLogger(__name__)
 
@@ -12,8 +13,9 @@ class VectorStore:
         self.embeddings = OllamaEmbeddings(model=embedding_model)
         self.persist_directory = persist_directory
         self.vector_db = None
+        self.summary_collection_name = '000_-_summary_collection_-_000'
         Path(persist_directory).mkdir(parents=True, exist_ok=True)
-
+        self.summary_db = Chroma(collection_name=self.summary_collection_name, embedding_function=self.embeddings, persist_directory=persist_directory)
 
     def create_vector_db(self, documents: List, collection_name: str='local-rag') -> Chroma:
         try:
@@ -34,6 +36,10 @@ class VectorStore:
         except Exception as e:
             logger.error(f'Error creating vector database: {e}')
             raise
+
+    def add_summary(self, summary: str, pdf_collection: str) -> None:
+        docs = [Document(page_content=summary, metadata={"pdf_collection": f"{pdf_collection}"})]
+        self.summary_db.add_documents(docs)
 
     def delete_collection(self) -> None:
         if self.vector_db:
