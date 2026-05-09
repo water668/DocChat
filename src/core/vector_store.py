@@ -41,6 +41,15 @@ class VectorStore:
         docs = [Document(page_content=summary, metadata={"pdf_collection": f"{pdf_collection}"})]
         self.summary_db.add_documents(docs)
 
+    def query_summary_collection(self, question: str, top_k: int=3) -> List[Document]:
+        print('quesion in query_summary_collection: ', question, top_k)
+        try:
+            docs_with_scores = self.summary_db.similarity_search_with_score(question, k=top_k)
+            return docs_with_scores
+        except Exception as e:
+            logger.error(f'Error querying summary collection: {e}')
+            raise
+
     def delete_collection(self) -> None:
         if self.vector_db:
             try:
