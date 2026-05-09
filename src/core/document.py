@@ -38,3 +38,13 @@ class DocumentProcessor:
             logger.error(f"Error splitting documents: {e}")
             raise
 
+def summarize_documents(documents: List, llm, n_front: int = 4) -> str:
+    """Summarize documents using a language model."""
+    try:
+        logger.info("Summarizing documents")
+        from langchain_classic.chains.summarize import load_summarize_chain
+        summarize_chain = load_summarize_chain(llm, chain_type="stuff", verbose=False)
+        return summarize_chain.invoke(documents[:n_front])['output_text']
+    except Exception as e:
+        logger.error(f"Error summarizing documents: {e}")
+        raise
